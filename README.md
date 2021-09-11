@@ -91,14 +91,3 @@ A really helpful resource for doing this project and creating smooth trajectorie
     cd uWebSockets
     git checkout e94b6e1
     ```
-
-
-## Project Instructions and Rubric
-
-cd CarND-Path-Planning-Project/build/
-cmake .. && make && ./path_planning
-
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
-
-
