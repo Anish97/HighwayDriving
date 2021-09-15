@@ -85,3 +85,26 @@ the path has processed since last time.
     cd uWebSockets
     git checkout e94b6e1
     ```
+## Approach
+
+The main Path Planning algorithm corresponds to the file https://github.com/Anish97/HighwayDriving/blob/master/src/main.cpp
+
+# Behaviour Planning
+
+There are 5 states designed for the Path Planning problem.
+1) Keep Lane
+2) Left Intent
+3) Left Lane Change
+4) Right Intent
+5) Right Lane Change
+
+Keep Lane
+The ego vehicle would try to attain the maximum allowable speed if the vehicle infront of it in the same lane is sufficiently distant from it. Otherwise it decelerates, eventually travelling at the same speed as the vehicle in front and switching to the Left Intent state or Right Intent state. It tries to switch to Left Intent first, since it is assumed that in Left hand drive, overtaking from left is preferred. The sufficient distance is calculated as:
+
+d\index{safety}=(v\power-index{2|ego}-v\power-index{2|front})/2a\index{max}
+
+Left Intent
+
+
+
+
