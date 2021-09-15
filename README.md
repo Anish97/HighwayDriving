@@ -89,6 +89,13 @@ the path has processed since last time.
 
 The main Path Planning algorithm corresponds to the file https://github.com/Anish97/HighwayDriving/blob/master/src/main.cpp
 
+## Prediction
+
+For avoiding collision, we need to predict the position of the traffic vehicles at the instant the ego vehicle completes the trajectory already planned.
+So, we calculate the speed of each traffic vehicle using the data from Perception module and multiply with the time duration of the planned trajectory of the ego vehicle, and simply add it to the position of traffic vehicle to get its future position.
+
+This method can be made more accurate by measuring the acceleration of each vehicle but we keep it simple in this project.
+
 ## Behaviour Planning
 
 There are 5 states designed for the Path Planning problem.
@@ -99,7 +106,7 @@ There are 5 states designed for the Path Planning problem.
 5) Right Lane Change
 
 ### Keep Lane
-The ego vehicle would try to attain the maximum allowable speed if the vehicle infront of it in the same lane is sufficiently distant from it. Otherwise it decelerates, eventually travelling at the same speed as the vehicle in front and switching to the Left Intent state or Right Intent state. It tries to switch to Left Intent first, since it is assumed that in Left hand drive, overtaking from left is preferred. 
+The ego vehicle would try to attain the maximum allowable speed if the vehicle infront of it in the same lane is sufficiently distant from it. Otherwise it decelerates, eventually travelling at the same speed as the vehicle in front and switching to the Left Intent state or Right Intent state. It tries to switch to Left Intent first, since it is assumed that in Left hand drive, overtaking from left is preferred. The target lane is the lane the ego vehicle is currently in.
 The sufficient distance is calculated as:
 
 ![alt text](https://github.com/Anish97/HighwayDriving/blob/master/Screenshot%202021-09-16%20at%201.00.50.png)
@@ -107,17 +114,21 @@ The sufficient distance is calculated as:
 assuming that maximum braking acceleration would be applied.
 
 ### Left Intent
-The algorithm checks if there are no other vehicles within 30 metres in the lanes left to the ego vehicle. If yes, the state remains in the Left Intent state. If not, the state changes to Left Lane Chnage state.
+The algorithm checks if there are no other vehicles within 30 metres in the lanes left to the ego vehicle. If yes, the state remains in the Left Intent state. If not, the state changes to Left Lane Chnage state. The target lane is the lane left to the ego vehicle.
 
 ### Left Lane Change
-This is when there are no other vehicles within 30 metres in the lanes left to the ego vehicle. The ego vehicle moves to the lane immeditely left to it in a smooth trajectory.
+This is when there are no other vehicles within 30 metres in the lanes left to the ego vehicle. The ego vehicle moves to the lane immediately left to it in a smooth trajectory. The target lane is the lane left to the ego vehicle.
 
 ### Right Intent
-The algorithm checks if there are no other vehicles within 30 metres in the lanes right to the ego vehicle. If yes, the state remains in the Right Intent state. If not, the state changes to Right Lane Chnage state.
+The algorithm checks if there are no other vehicles within 30 metres in the lanes right to the ego vehicle. If yes, the state remains in the Right Intent state. If not, the state changes to Right Lane Chnage state. The target lane is the lane right to the ego vehicle.
 
 ### Right Lane Change
-This is when there are no other vehicles within 30 metres in the lanes right to the ego vehicle. The ego vehicle moves to the lane immeditely right to it in a smooth trajectory.
+This is when there are no other vehicles within 30 metres in the lanes right to the ego vehicle. The ego vehicle moves to the lane immediately right to it in a smooth trajectory. The target lane is the lane right to the ego vehicle.
 
-Note that in Left Intent and Right Intent states, all lanes left/right to the ego vehicle are checked for nearby vehicles (instead of only the immediate left/right lanes) since there is a possibility of a vehicle two lanes away from the ego vehicle moving to the same lane as the ego vehicle as the same time.
+* Note that in Left Intent and Right Intent states, all lanes left/right to the ego vehicle are checked for nearby vehicles (instead of only the immediate left/right lanes) since there is a possibility of a vehicle two lanes away from the ego vehicle moving to the same lane as the ego vehicle as the same time.
 
+## Trajectory Planning
 
+After we obtain the target lane from the Behaviour Planning step, the near future trajectory of the ego vehicle is planned.
+A First-In-First-Out vector of trajectory points is maintained and as the vehicle traverses over these points, new points are added from a spline curve.
+The spline is calculate by intrapolating over the last two points (most recently added) of the trajectory points and one point far ahead (30metres) in the target lane. This ensures that the trajetory is smooth and eventually the ego vehicle ends up in the target lane. To simplify calculation, the spline curve is calculated in the ego vehicle's reference frame by transforming the required points by translation and rotation.
