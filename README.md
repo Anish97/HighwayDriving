@@ -99,12 +99,25 @@ There are 5 states designed for the Path Planning problem.
 5) Right Lane Change
 
 Keep Lane
-The ego vehicle would try to attain the maximum allowable speed if the vehicle infront of it in the same lane is sufficiently distant from it. Otherwise it decelerates, eventually travelling at the same speed as the vehicle in front and switching to the Left Intent state or Right Intent state. It tries to switch to Left Intent first, since it is assumed that in Left hand drive, overtaking from left is preferred. The sufficient distance is calculated as:
+The ego vehicle would try to attain the maximum allowable speed if the vehicle infront of it in the same lane is sufficiently distant from it. Otherwise it decelerates, eventually travelling at the same speed as the vehicle in front and switching to the Left Intent state or Right Intent state. It tries to switch to Left Intent first, since it is assumed that in Left hand drive, overtaking from left is preferred. 
+The sufficient distance is calculated as:
 
 ![alt text](https://github.com/Anish97/HighwayDriving/blob/master/Screenshot%202021-09-16%20at%201.00.50.png)
 
+assuming that maximum braking acceleration would be applied.
+
 Left Intent
+The algorithm checks if there are no other vehicles within 30 metres in the lanes left to the ego vehicle. If yes, the state remains in the Left Intent state. If not, the state changes to Left Lane Chnage state.
 
+Left Lane Change
+This is when there are no other vehicles within 30 metres in the lanes left to the ego vehicle. The ego vehicle moves to the lane immeditely left to it in a smooth trajectory.
 
+Right Intent
+The algorithm checks if there are no other vehicles within 30 metres in the lanes right to the ego vehicle. If yes, the state remains in the Right Intent state. If not, the state changes to Right Lane Chnage state.
+
+Right Lane Change
+This is when there are no other vehicles within 30 metres in the lanes right to the ego vehicle. The ego vehicle moves to the lane immeditely right to it in a smooth trajectory.
+
+Note that in Left Intent and Right Intent states, all lanes left/right to the ego vehicle are checked for nearby vehicles (instead of only the immediate left/right lanes) since there is a possibility of a vehicle two lanes away from the ego vehicle moving to the same lane as the ego vehicle as the same time.
 
 
